@@ -1,0 +1,6 @@
+        ran5000     reversed50k     sorted50k       random50k
+sort1   0.065s      4.820s          0.461s          5.546s
+sort2   0.029s      0.529s          0.534s          0.488s
+sort3   0.041s      2.402s          2.255s          2.342s
+
+
