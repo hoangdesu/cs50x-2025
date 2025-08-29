@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <title>Trivia!</title>
+        <script>
+            // Add code to check answers to questions
+
+            const shuffle = (lst) => {
+                const shuffledList = [...lst];
+
+                for (let i = 0; i < shuffledList.length; i++) {
+                    let r = parseInt(Math.random() * lst.length);
+                    let temp = shuffledList[i];
+                    shuffledList[i] = shuffledList[r];
+                    shuffledList[r] = temp;
+                }
+
+                return shuffledList;
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const answers = ['Mirror Image', 'Sigil of Malice', 'Distortion', 'Ethereal Chains', 'Mimic'];
+                const correctAns = 'Mimic';
+
+                const shuffledAnswers = shuffle(answers);
+
+                const btnContainer = document.querySelector('#btn-container');
+                const feedbackP1 = document.querySelector('#feedback1');
+
+                shuffledAnswers.forEach(ans => {
+                    const btn = document.createElement('button');
+                    btn.textContent = ans;
+                    btn.addEventListener('click', () => {
+                        if (btn.textContent === correctAns) {
+                            feedbackP1.textContent = 'Correct!'
+                            btn.style.backgroundColor = 'green';
+                        } else {
+                            feedbackP1.textContent = 'Incorrect'
+                            btn.style.backgroundColor = 'red';
+                        }
+                        
+                    });
+                    
+                    btnContainer.append(btn, " "); // the space allows the buttons to space out automatically
+                    // btnContainer.innerHTML += `<button>${ans}</button> `;
+                });
+
+                // Part 2
+                const form = document.querySelector('form');
+                const feedbackP2 = document.querySelector('#feedback2');
+
+                form.addEventListener('submit', (evt) => {
+                    evt.preventDefault();
+                    const value = evt.target[0].value; // input
+                    // console.log(value)
+
+                    if (value.toLowerCase() === 'vietnam') {
+                        evt.target[0].style.backgroundColor = 'green';
+                        feedbackP2.textContent = 'Correct!'
+                    } else {
+                        evt.target[0].style.backgroundColor = 'red';
+                        feedbackP2.textContent = 'Incorrect!'
+                    }
+                })
+                
+            });
+        </script>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Trivia!</h1>
+        </div>
+
+        <div class="container">
+            <div class="section">
+                <h2>Part 1: Multiple Choice</h2>
+                <hr>
+
+                <!-- Add multiple choice question here -->
+                <h3>What is the name of LeBlanc's R?</h3>
+
+                <div id="btn-container"></div>
+                <p id="feedback1"></p>
+
+            </div>
+
+            <div class="section">
+                <h2>Part 2: Free Response</h2>
+                <hr>
+
+                <!-- Add free response question here -->
+                <h3>What is the best country in the world?</h3>
+                
+                <form>
+                    <input type="text">
+                    <input type="submit" value="Check Answer">
+                </form>
+
+                <p id="feedback2"></p>
+            </div>
+        </div>
+    </body>
+</html>
