@@ -1,0 +1,21 @@
+10 HTML tags:
+    1. h1
+    2. h2
+    3. main
+    4. div
+    5. form
+    6. a
+    7. img
+    8. table
+    9. iframe
+    10. ul
+    
+5 CSS properties:
+    1. class
+    2. nested css
+    3. hover state
+    4. element
+    5. attribute
+
+My site mainly use Bootstrap for styling.
+It uses JavaScript to handle the form submit
