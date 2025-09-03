@@ -2,5 +2,19 @@
     "files.associations": {
         "stdlib.h": "c",
         "_malloc.h": "c"
-    }
+    },
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "favorites",
+            "database": "${workspaceFolder:CS50x 2025}/Week 7 SQL/favorites/favorites.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "songs",
+            "database": "${workspaceFolder:CS50x 2025}/Week 7 SQL/songs/songs.db"
+        }
+    ]
 }

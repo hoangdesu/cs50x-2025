@@ -1,0 +1,18 @@
+
+1. Characterizing the listener’s audio aura: If `songs.db` contains the listener’s top 100 songs from 2018, I would calculate their audio aura by averaging the energy, valence, and danceability values of those songs.
+- If the averages are high, the aura might be described as *vibrant, upbeat, and lively*.
+- If the averages are low, the aura might instead be *calm, moody, or introspective*.
+- A mix of high energy with low valence could suggest *intense or edgy vibes*, while high valence with moderate danceability might reflect a *happy and relaxed aura*.
+
+-> In short, the aura provides a broad emotional and rhythmic “snapshot” of their listening habits for that year.
+
+2. Limitations of this approach: While averaging energy, valence, and danceability gives a simple way to summarize mood, it’s not very representative of the listener because:
+- It flattens nuance: a person may listen to both very sad songs and very happy songs, but the average would suggest they just listen to “medium-valence” music, which isn’t accurate.
+- It ignores context: moods can change over time (e.g., summer vs. winter listening habits, or music for workouts vs. relaxation).
+- It overlooks variety: someone who listens to diverse genres (hip hop, jazz, classical) would get a misleading “average aura” that doesn’t capture their range.
+
+3. Better ways to calculate the aura:
+- Instead of a single average, cluster the songs into groups (e.g., high-energy vs. low-energy clusters) and describe the top two clusters as the person’s main aura.
+- Weight songs by play count: if some songs were listened to much more often than others, they should influence the aura more strongly.
+- Include other features like tempo, acousticness, and instrumentalness to give a richer picture.
+- Consider trends across time: a person’s aura could reflect shifts in listening throughout the year, rather than just one static number.
