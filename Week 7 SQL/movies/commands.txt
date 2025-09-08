@@ -1,0 +1,1 @@
+$ cat filename.sql | sqlite3 movies.db > output.txt
