@@ -1,0 +1,50 @@
+- car owners that left the crime scene:
+Vanessa
+Barry
+Iman
+Sofia
+Luca
+Diana
+Kelsey
+Bruce <
+
+
+- people withdrawing money within the timeframe:
+Bruce <
+Diana
+Brooke
+Kenny
+Iman
+Luca
+Taylor
+Benista
+
+
+- people with matching licence plate and are passengers on flight:
+Sofia
+Luca
+Kelsey
+Bruce <
+
+
+- ppl involved in calls:
+Sofia	Jack
+Kelsey	Larry
+Bruce	Robin <
+Kelsey	Melissa
+Taylor	James
+Diana	Philip
+Carina	Jacqueline
+Kenny	Doris
+Benista	Anna
+
+
+- passengers on flight:
+Kenny   
+Sofia   <
+Taylor
+Luca    <
+Kelsey
+Edward
+Bruce   <
+Doris
