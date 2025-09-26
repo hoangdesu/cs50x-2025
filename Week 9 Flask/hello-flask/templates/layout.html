@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello Flask: {{ current_time }}</title>
+    <style>
+        .container {
+            max-width: 80%;
+            margin: auto;
+            margin-bottom: 32px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="container">
+        <!-- <a href="/say-hi">Say Hi</a>
+        <a href="/wassup">Wassup</a> -->
+        {% for nav in navs %}
+            <a href="{{ nav.url }}">{{ nav.text }}</a>
+        {% endfor %}
+    </nav>
+
+    <div class="container">
+        {% block body %}{% endblock %}
+    </div>
+</body>
+</html>

@@ -15,6 +15,12 @@
             "driver": "SQLite",
             "name": "songs",
             "database": "${workspaceFolder:CS50x 2025}/Week 7 SQL/songs/songs.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "birthday",
+            "database": "${workspaceFolder:CS50x 2025}/Week 9 Flask/birthdays/birthdays.db"
         }
     ]
 }
