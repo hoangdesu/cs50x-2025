@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+        <title>shows</title>
+    </head>
+
+    <body>
+
+        <h1>Shows</h1>
+        
+        <input autocomplete="off" autofocus placeholder="Query" type="text">
+
+        <ul></ul>
+
+        <script>
+            let input = document.querySelector('input');
+            input.addEventListener('input', async function() {
+                // wait 0.5s for the user to type -> search debouncing
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                let response = await fetch('/search?q=' + input.value);
+
+                /* Client-side rendering: building li elements
+
+                let shows = await response.json();
+                let html = '';
+
+                // console.log(shows);
+
+                for (let i in shows) {
+                    let title = shows[i].title.replace('<', '&lt;').replace('&', '&amp;');
+                    html += '<li>' + title + '</li>';
+                }
+                
+                document.querySelector('ul').innerHTML = html;
+                */
+
+                // Since server now returns rendered HTML template, no need to use client side to render json data
+                let shows = await response.text();
+                document.querySelector('ul').innerHTML = shows;
+            });
+        </script>
+
+    </body>
+
+</html>
