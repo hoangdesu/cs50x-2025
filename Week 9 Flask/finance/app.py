@@ -45,7 +45,11 @@ def index():
 @login_required
 def buy():
     """Buy shares of stock"""
-    return apology("TODO")
+    # return apology("TODO")
+    
+    # // TODO
+    symbol = request.args.get('symbol')
+    return symbol
 
 
 @app.route("/history")
@@ -112,7 +116,7 @@ def search():
     # Search for symbol autocomplete
     symbol = request.args.get('symbol')
     if symbol:
-        print('>> symbol:', symbol)
+        print('>> GET /search symbol:', symbol)
         query = '''
             SELECT * FROM ticker_symbols 
             WHERE name LIKE ? OR symbol LIKE ? LIMIT 20
@@ -132,13 +136,23 @@ def quote():
         
         
     elif request.method == 'POST':
-        symbol = request.form.get('symbol')
-        print('>> symbol:', symbol)
+        # symbol = request.form.get('symbol')
+        # print('>> symbol:', symbol)
         
+        symbol = request.get_json()
+        if symbol:
+            print('>>POST /quote data: ', symbol)
         
-        quote = lookup(symbol)
-        print('>> quote:', quote)
-        return quote
+            quote = lookup(symbol)
+            print('>> lookup quote:', quote)
+            
+            if quote:
+                return render_template('quoted-block.html', quote=quote)
+            else:
+                print('>> quote error: ', quote)
+                return '<div class="mt-5">Stock quote not found</div>'
+        else:
+            return apology('Invalid symbol')
 
 
 @app.route("/register", methods=["GET", "POST"])

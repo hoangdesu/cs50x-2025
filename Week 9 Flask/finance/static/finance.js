@@ -32,7 +32,7 @@ searchBox.addEventListener('input', (evt) => {
 
     autocompleteMenu.innerHTML = '';
 
-    if (data.length > 0) {
+    if (data && data.length > 0) {
       // reset autocompleteMenu
 
       // Show the dropdown
@@ -53,6 +53,11 @@ searchBox.addEventListener('input', (evt) => {
       } else {
         bootstrap.Dropdown.getInstance(searchBox).show();
       }
+    } else if (inputValue) {
+      const item = document.createElement('li');
+      item.className = 'dropdown-item disabled';
+      item.textContent = 'No matches found';
+      autocompleteMenu.appendChild(item);
     }
   }, 500);
 });
@@ -79,20 +84,21 @@ searchBox.addEventListener('keydown', (e) => {
   // Update active class
   items.forEach((item, idx) => {
     if (idx === currentIndex) {
-      item.classList.add("active");
-      item.scrollIntoView({ block: "nearest" }); // auto scroll
+      item.classList.add('active');
+      item.scrollIntoView({ block: 'nearest' }); // auto scroll
     } else {
-      item.classList.remove("active");
+      item.classList.remove('active');
     }
   });
 });
 
 // Search Quote
 const quoteForm = document.querySelector('#quote-form');
+const quoteDetails = document.querySelector('#quote-details');
 
-quoteForm.addEventListener('submit', (evt) => {
+quoteForm.addEventListener('submit', async (evt) => {
   evt.preventDefault();
-  
+
   const inputValue = searchBox.value;
 
   console.log('getting quote', inputValue);
@@ -101,5 +107,22 @@ quoteForm.addEventListener('submit', (evt) => {
     window.history.pushState({}, '', `?symbol=${inputValue.toUpperCase()}`);
   } else {
     window.history.pushState({}, '', '');
+    return;
   }
+
+  quoteDetails.innerHTML = '<div class="spinner-border text-primary mt-5" role="status"></div>';
+
+  const res = await fetch('/quote', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: JSON.stringify(inputValue)
+  });
+
+  const content = await res.text();
+
+  // console.log(content);
+  
+  quoteDetails.innerHTML = content;
 });
