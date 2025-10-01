@@ -1,7 +1,7 @@
 import os
 
 from cs50 import SQL
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, redirect, render_template, request, session, jsonify
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 import logging
@@ -106,17 +106,44 @@ def logout():
     return redirect("/")
 
 
+@app.route("/search")
+@login_required
+def search():
+    # Search for symbol autocomplete
+    symbol = request.args.get('symbol')
+    if symbol:
+        print('>> symbol:', symbol)
+        query = '''
+            SELECT * FROM ticker_symbols 
+            WHERE name LIKE ? OR symbol LIKE ? LIMIT 20
+        '''
+        suggested_ticker_symbols = db.execute(query, "%" + symbol + "%", "%" + symbol + "%")
+        return jsonify(suggested_ticker_symbols)
+
+
 @app.route("/quote", methods=["GET", "POST"])
 @login_required
 def quote():
     """Get stock quote."""
-    return apology("TODO")
+    # return apology("TODO")
+    
+    if request.method == 'GET':
+        return render_template('quote-block.html');
+        
+        
+    elif request.method == 'POST':
+        symbol = request.form.get('symbol')
+        print('>> symbol:', symbol)
+        
+        
+        quote = lookup(symbol)
+        print('>> quote:', quote)
+        return quote
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
-    # return apology("TODO")
     
     # print('> print ehe:', generate_password_hash('ehe'))
     # app.logger.info('> log ehe:' + generate_password_hash('ehe'))
@@ -151,7 +178,7 @@ def register():
         
         # print('>> ', username, password, confirmation)
         
-        return redirect("/login")
+        return redirect("/")
     
     
 

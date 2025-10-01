@@ -16,6 +16,8 @@
 
         <link href="/static/styles.css" rel="stylesheet">
 
+        <script src="/static/finance.js" defer></script>
+
         <title>C$50 Finance: {% block title %}{% endblock %}</title>
 
     </head>
@@ -57,7 +59,7 @@
             </header>
         {% endif %}
 
-        <main class="container py-5 text-center">
+        <main class="container py-5 text-center min-vh-100">
             {% block main %}{% endblock %}
         </main>
 
