@@ -45,11 +45,56 @@ def index():
 @login_required
 def buy():
     """Buy shares of stock"""
-    # return apology("TODO")
     
-    # // TODO
-    symbol = request.args.get('symbol')
-    return symbol
+    # GET
+    if request.method == 'GET':
+        symbol = request.args.get('symbol')
+
+        # need to have a symbol chosen to access the buy page
+        if not symbol:
+            return redirect('/quote')
+        
+        if 'quote' not in session:
+            return apology("Sorry you haven't selected a quote")
+
+        # if the quote on query string doesn't match the one stored in session
+        # lookup again, update session to latest
+        if symbol != session['quote']['symbol']:
+            print(f'>> symbols mismatched. looking up again for {symbol}')
+            new_symbol = lookup(symbol)
+            if new_symbol is None:
+                print('>> the new symbol user typed in address bar does not exist on CS50 finance API')
+                return redirect('/quote')
+            else:
+                session['quote'] = new_symbol
+            
+        print(">> session['quote']:", session['quote'])
+        
+        return render_template('buy.html', quote=session['quote'])
+    
+    # POST
+    elif request.method == 'POST':
+        symbol = request.form.get('symbol')
+        shares = request.form.get('shares')
+
+        if symbol is None:
+            return apology('Invalid symbol')
+        
+        if shares is None or int(shares) <= 0:
+            return apology('Invalid shares')
+        
+        # getting current user data for calculations
+        
+        # CS50's SELECT always returns a list, get the only result at index 0
+        user = db.execute('SELECT * FROM users WHERE id = ?', session["user_id"])[0]
+        
+        print('>> user:', user)
+        
+        # // wip
+        
+        # // TODO: record buy transaction in db
+        
+        return 'OK'
 
 
 @app.route("/history")
@@ -91,6 +136,11 @@ def login():
         session["user_id"] = rows[0]["id"]
         print('\n>> session["user_id"]:', session["user_id"])
 
+        # added feature: display username on navbar
+        session['user_name'] = rows[0]['username']
+
+        print('>> session:', session)
+
         # Redirect user to home page
         return redirect("/")
 
@@ -129,11 +179,9 @@ def search():
 @login_required
 def quote():
     """Get stock quote."""
-    # return apology("TODO")
     
     if request.method == 'GET':
-        return render_template('quote-block.html');
-        
+        return render_template('quote.html');
         
     elif request.method == 'POST':
         # symbol = request.form.get('symbol')
@@ -147,6 +195,9 @@ def quote():
             print('>> lookup quote:', quote)
             
             if quote:
+                # ultilize the session object to remember the quote user selected
+                # to be used later in buy page
+                session['quote'] = quote
                 return render_template('quoted-block.html', quote=quote)
             else:
                 print('>> quote error: ', quote)
@@ -163,7 +214,7 @@ def register():
     # app.logger.info('> log ehe:' + generate_password_hash('ehe'))
     
     if request.method == 'GET':
-        return render_template('register-block.html')
+        return render_template('register.html')
     
     elif request.method == 'POST':
         username = request.form.get('username')

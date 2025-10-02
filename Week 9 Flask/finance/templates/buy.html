@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Buy
+{% endblock %}
+
+{% block main %}
+    <form action="/buy" method="post">
+        <div class="mb-3">
+            <h5>Company Name</h5>
+            <input autocomplete="off" autofocus class="form-control mx-auto w-25" type="text" value="{{ quote.name }}" disabled>
+        </div>
+        <div class="mb-3">
+            <h5>Symbol</h5>
+            <input autocomplete="off" autofocus class="form-control mx-auto w-25" name="symbol" type="text" value="{{ quote.symbol }}" disabled>
+            <!-- disabled input is NOT included in the form submission by default -> use this hidden input trick to include it in the form -->
+            <input name="symbol" value="{{ quote.symbol }}" type="hidden">
+        </div>
+        <div class="mb-3">
+            <h5>Price</h5>
+            <input autocomplete="off" autofocus class="form-control mx-auto w-25" type="text" value="{{ quote.price | usd }} / share" disabled>
+        </div>
+        <div class="mb-3">
+            <h5>Shares</h5>
+            <input autocomplete="off" autofocus class="form-control mx-auto w-25" name="shares" type="number" min="1" value="1">
+        </div>
+        <p>TODO: limit the number of shares user can buy based on their current balance</p>
+        <div class="mt-5">
+            <a href="/quote" class="btn btn-info">🔙 Back</a>
+            <button class="btn btn-success w-25" type="submit">Buy 📈</button>
+        </div>
+    </form>
+{% endblock %}
