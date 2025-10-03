@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+    <h1 class="mb-5">Transaction History</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                {% set columns = ['#', 'Action', 'Symbol', 'Price', 'Shares', 'Total', 'Created at'] %}
+
+                {% for col in columns %}
+                    <th scope="col" class="text-end">{{ col }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+                <tr>
+                    <th scope="row" class="text-end">{{ loop.index }}</th>
+                    <td class="text-end">
+                        <span style="display: inline-block; width: 50px; text-align: center;" class="{{ 'bg-success text-light' if transaction.get('action') == 'BUY' else 'bg-warning' }}">
+                            {{ transaction.get('action') }}
+                        </span>
+                    </td>
+                    <td class="text-end">{{ transaction.get('symbol') }}</td>
+                    <td class="text-end">{{ transaction.get('price') | usd }}</td>
+                    <td class="text-end">{{ transaction.get('shares') }}</td>
+                    <td class="text-end">{{ transaction.get('total') | usd }}</td>
+                    <td class="text-end">{{ transaction.get('created_at') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

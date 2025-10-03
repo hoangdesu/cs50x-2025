@@ -1,6 +1,8 @@
 import os
 
+# https://cs50.readthedocs.io/libraries/cs50/python/
 from cs50 import SQL
+
 from flask import Flask, flash, redirect, render_template, request, session, jsonify
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -38,7 +40,17 @@ def after_request(response):
 @login_required
 def index():
     """Show portfolio of stocks"""
-    return apology("TODO")
+    query = '''
+        SELECT symbol, SUM(shares) AS total_shares, price, SUM(total) AS total_price
+        FROM transactions
+        WHERE users_id = ?
+        GROUP BY symbol;
+    '''
+    rows = db.execute(query, session['user_id'])
+    
+    print('>> rows:', rows)
+    
+    return render_template('index.html', transactions=rows)
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -52,6 +64,7 @@ def buy():
 
         # need to have a symbol chosen to access the buy page
         if not symbol:
+            flash('Please select a symbol first to buy')
             return redirect('/quote')
         
         if 'quote' not in session:
@@ -83,25 +96,73 @@ def buy():
         if shares is None or int(shares) <= 0:
             return apology('Invalid shares')
         
+        price = session['quote'].get('price')
+        buy_total = int(shares) * float(price)
+        
         # getting current user data for calculations
         
         # CS50's SELECT always returns a list, get the only result at index 0
         user = db.execute('SELECT * FROM users WHERE id = ?', session["user_id"])[0]
         
-        print('>> user:', user)
+        print('>> user:', user, user.get('cash'))
         
-        # // wip
+        user_cash = user.get('cash')
+
+        if buy_total > user_cash:
+            return apology("You're too poor to buy")
         
-        # // TODO: record buy transaction in db
+
+        # using SQL transaction
+        try:
+            db.execute('BEGIN')  # start transaction
+            
+            # record new BUY transaction
+            query = """
+                INSERT INTO transactions (users_id, symbol, [action], price, shares, total)
+                VALUES (:user_id, :symbol, 'BUY', :price, :shares, :total);
+            """
+            
+            db.execute(
+                query, 
+                user_id=session['user_id'], 
+                symbol=symbol, 
+                price=price, 
+                shares=shares,
+                total=buy_total
+            )
+            
+            # update user's available cash
+            new_balance = user_cash - buy_total
+            db.execute('UPDATE users SET cash = ? WHERE id = ?', new_balance, session['user_id'])
+            
+            db.execute("COMMIT")  # commit all
+            print("Transaction inserted successfully")
+            
+        except Exception as e:
+            db.execute("ROLLBACK")
+            print("Transaction failed. Rolled back", e)
+            return apology('Transaction failed')
         
-        return 'OK'
+        flash(f'Successfully bought {symbol}!')
+        return redirect('/')
 
 
 @app.route("/history")
 @login_required
 def history():
     """Show history of transactions"""
-    return apology("TODO")
+    
+    query = '''
+        SELECT * FROM transactions 
+        WHERE users_id = ? 
+        ORDER BY created_at DESC
+    '''
+    
+    transactions = db.execute(query, session['user_id'])
+
+    print('>> transactions: ', transactions)
+    
+    return render_template('history.html', transactions=transactions)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -142,6 +203,7 @@ def login():
         print('>> session:', session)
 
         # Redirect user to home page
+        flash(f'Welcome back, {session["user_name"]}!')
         return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)
@@ -152,12 +214,13 @@ def login():
 @app.route("/logout")
 def logout():
     """Log user out"""
+    flash(f'Goodbye {session["user_name"]}!')
 
     # Forget any user_id
     session.clear()
 
     # Redirect user to login form
-    return redirect("/")
+    return redirect("/login")
 
 
 @app.route("/search")
