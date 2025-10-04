@@ -50,9 +50,55 @@ WHERE users_id = 5;
 
 
 -- Group by symbols
-SELECT symbol, SUM(shares), price, SUM(total), *
+SELECT symbol, SUM(shares), price, SUM(total)
 FROM transactions
 WHERE users_id = 5
 GROUP BY symbol;
 
 
+SELECT symbol, SUM(shares) AS total_shares, price, SUM(total) AS total_price
+FROM transactions
+WHERE users_id = 5
+GROUP BY symbol;
+
+
+-- Using Window Function: grand_total is included as a COLUMN -> repeated data
+SELECT
+    symbol,
+    SUM(shares) AS total_shares,
+    price,
+    SUM(total) AS total_price,
+    SUM(SUM(total)) OVER () AS grand_total
+FROM transactions
+WHERE users_id = 5
+GROUP BY symbol;
+
+
+
+-- Add a separate UNION row for the grand total
+SELECT symbol, SUM(shares) AS total_shares, SUM(total) AS total_price
+FROM transactions
+WHERE users_id = 5
+GROUP BY symbol
+
+UNION ALL
+
+SELECT 'TOTAL' AS symbol, NULL AS total_shares, SUM(total) AS total_price
+FROM transactions
+WHERE users_id = 5;
+
+
+SELECT SUM(total) AS grand_total
+FROM transactions
+WHERE users_id = 5;
+
+
+
+SELECT SUM(shares) AS total_shares, SUM(total) AS grand_total
+FROM transactions
+WHERE users_id = 8;
+
+
+
+DELETE FROM transactions
+WHERE users_id = 5;

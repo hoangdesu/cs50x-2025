@@ -6,26 +6,60 @@
 
 {% block main %}
     <h1 class="mb-5">Dashboard</h1>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                {% set columns = ['#', 'Symbol', 'Price', 'Shares', 'Total'] %}
 
-                {% for col in columns %}
-                    <th scope="col" class="text-end">{{ col }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for transaction in transactions %}
+    <div class="my-5 d-flex justify-content-between">
+        <div>
+            <span class="text-decoration-underline">User:</span>
+            <span class="fw-bold">{{ user_name }}</span>
+        </div>
+        <div>
+            <span class="text-decoration-underline">Available cash:</span>
+            <span class="fw-bold">{{ cash | usd}}</span>
+        </div>
+    </div>
+
+    {% if symbols|length == 0 or summaries.get('total_shares') is none or summaries.get('grand_total') is none %}
+        <div>
+            <p>You don't own any stocks yet.</p>
+
+            <a href="/quote" class="link-offset-1">
+                <button type="button" class="btn btn-primary">Buy now!</button>
+            </a>
+        </div>
+    {% else %}
+        <p class="mt-5 text-start">Stocks you're holding</p>
+        <table class="table table-striped table-hover">
+            <thead>
                 <tr>
-                    <th scope="row" class="text-end">{{ loop.index }}</th>
-                    <td class="text-end">{{ transaction.get('symbol') }}</td>
-                    <td class="text-end">{{ transaction.get('price') | usd }}</td>
-                    <td class="text-end">{{ transaction.get('total_shares') }}</td>
-                    <td class="text-end">{{ transaction.get('total_price') | usd }}</td>
+                    {% set columns = ['#', 'Symbol', 'Price', 'Shares', 'Total'] %}
+
+                    {% for col in columns %}
+                        <th scope="col" class="text-end">{{ col }}</th>
+                    {% endfor %}
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            
+            <tbody>
+                {% for symbol in symbols %}
+                    <tr>
+                        <td scope="row" class="text-end">{{ loop.index }}</td>
+                        <td class="text-end">{{ symbol.get('symbol') }}</td>
+                        <td class="text-end">{{ symbol.get('price') | usd }}</td>
+                        <td class="text-end">{{ symbol.get('total_shares') }}</td>
+                        <td class="text-end">{{ symbol.get('total_price') | usd }}</td>
+                    </tr>
+                {% endfor %}
+
+                <!-- summary row -->
+                <tr class="table-warning fw-semibold">
+                    <td class="text-end">TOTAL</td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-end">{{ summaries.get('total_shares') }}</td>
+                    <td class="text-end">{{ summaries.get('grand_total') | usd }}</td>
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
+    
 {% endblock %}
