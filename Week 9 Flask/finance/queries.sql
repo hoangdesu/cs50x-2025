@@ -102,3 +102,28 @@ WHERE users_id = 8;
 
 DELETE FROM transactions
 WHERE users_id = 5;
+
+
+INSERT INTO transactions (users_id, symbol, [action], price, shares, total)
+VALUES (9, 'NVDA', 'SELL', 12.3, 10, 123);
+
+
+SELECT sql FROM sqlite_master WHERE type='table' AND name = 'transactions';
+
+
+--have to consider BUY and SELL actions too
+
+SELECT
+    t.symbol,
+    SUM(CASE WHEN t.action = 'BUY'  THEN t.shares
+             WHEN t.action = 'SELL' THEN -t.shares END) AS total_shares,
+    SUM(CASE WHEN t.action = 'BUY'  THEN t.total
+             WHEN t.action = 'SELL' THEN -t.total END) AS total_cost,
+    (SUM(CASE WHEN t.action = 'BUY'  THEN t.total
+              WHEN t.action = 'SELL' THEN -t.total END) * 1.0
+     / SUM(CASE WHEN t.action = 'BUY'  THEN t.shares
+                WHEN t.action = 'SELL' THEN -t.shares END)) AS avg_price
+FROM transactions AS t
+WHERE t.users_id = ?
+GROUP BY t.symbol
+HAVING total_shares > 0;

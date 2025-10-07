@@ -67,4 +67,8 @@ def lookup(symbol):
 
 def usd(value):
     """Format value as USD."""
+    if value < 0:
+        return f"-${abs(value):,.2f}"
+    
     return f"${value:,.2f}"
+
