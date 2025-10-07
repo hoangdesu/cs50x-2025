@@ -5,13 +5,17 @@
             <h5>{{ quote.symbol }}</h5>
         </div>
         <h3 class="fw-bold ml-5">{{ quote.price | usd }}</h3>
+        
     </div>
+    <p>You currently own {{ owned_shares }} shares</p>
     <div class="d-flex justify-content-center align-items-baseline gap-5 mt-5">
         <a href="/buy?symbol={{ quote.symbol }}">
             <button type="button" class="btn btn-success">Buy {{ quote.symbol }}</button>
         </a>
-        <a href="/sell?symbol={{ quote.symbol }}">
-            <button type="button" class="btn btn-warning">Sell {{ quote.symbol }}</button>
-        </a>
+        {% if owned_shares > 0 %}
+            <a href="/sell?symbol={{ quote.symbol }}">
+                <button type="button" class="btn btn-warning">Sell {{ quote.symbol }}</button>
+            </a>
+        {% endif %}
     </div>
 </div>

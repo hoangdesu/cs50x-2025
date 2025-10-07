@@ -1,8 +1,8 @@
-from flask import render_template, session, request, flash, redirect
-from helpers import apology, login_required, lookup
+from flask import render_template, session, request
+from helpers import apology, login_required, lookup, get_owned_shares
 
 # shared instances
-from app import app, db
+from app import app
 
 
 @app.route("/quote", methods=["GET"])
@@ -27,7 +27,10 @@ def quote_post():
             # ultilize the session object to remember the quote user selected
             # to be used later in buy page
             session['quote'] = quote
-            return render_template('quoted-block.html', quote=quote)
+
+            owned_shares = get_owned_shares(quote.get('symbol'))
+            
+            return render_template('quoted-block.html', quote=quote, owned_shares=owned_shares)
         else:
             print('>> quote error: ', quote)
             return '<div class="mt-5">Stock quote not found</div>'

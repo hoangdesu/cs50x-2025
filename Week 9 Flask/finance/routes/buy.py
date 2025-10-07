@@ -1,5 +1,5 @@
 from flask import render_template, session, request, flash, redirect
-from helpers import apology, login_required, lookup
+from helpers import apology, login_required, lookup, get_owned_shares
 
 # shared instances
 from app import app, db
@@ -35,19 +35,9 @@ def buy_get():
     print(">> session['quote']:", session['quote'])
     print('>> session:', session)
     
-    owned_shares = db.execute("""
-        SELECT 
-            SUM(CASE WHEN t.action = 'BUY' THEN t.shares
-                    WHEN t.action = 'SELL' THEN -t.shares END) AS owned_shares
-        FROM transactions t
-        WHERE users_id = ? AND symbol = ?
-    """, session['user_id'], symbol)[0].get('owned_shares')
-    
+    owned_shares = get_owned_shares(symbol)
     print('>> owned_shares:', owned_shares)
     
-    if not owned_shares:
-        owned_shares = 0
-
     available_cash = db.execute('SELECT cash FROM users WHERE id = ?', session['user_id'])[0].get('cash')
     print('>> available_cash:', available_cash)
     

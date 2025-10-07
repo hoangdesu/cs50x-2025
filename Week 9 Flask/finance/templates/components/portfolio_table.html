@@ -43,6 +43,14 @@
                     <p class="mb-1">{{ symbol.get('total_market') | usd }}</p>
                     <p class="text-muted m-0">{{ symbol.get('total_invested') | usd }}</p>
                 </td>
+                <td>
+                    <a href="/buy?symbol={{ symbol.get('symbol') }}">
+                        <button>Buy</button>
+                    </a>
+                    <a href="/sell?symbol={{ symbol.get('symbol') }}">
+                        <button>Sell</button>
+                    </a>
+                </td>
             </tr>
         {% endfor %}
 

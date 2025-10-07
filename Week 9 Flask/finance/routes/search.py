@@ -16,5 +16,5 @@ def search():
             SELECT * FROM ticker_symbols 
             WHERE name LIKE ? OR symbol LIKE ? LIMIT 20
         '''
-        suggested_ticker_symbols = db.execute(query, "%" + symbol + "%", "%" + symbol + "%")
+        suggested_ticker_symbols = db.execute(query, symbol + "%", symbol + "%")
         return jsonify(suggested_ticker_symbols)

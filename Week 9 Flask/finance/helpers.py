@@ -3,7 +3,6 @@ import requests
 from flask import redirect, render_template, session
 from functools import wraps
 
-
 def apology(message, code=400):
     """Render message as an apology to user."""
 
@@ -72,3 +71,20 @@ def usd(value):
     
     return f"${value:,.2f}"
 
+
+def get_owned_shares(symbol: str) -> int:
+    # avoid circular import
+    from app import db
+    owned_shares = db.execute("""
+        SELECT 
+            SUM(CASE WHEN t.action = 'BUY' THEN t.shares
+                    WHEN t.action = 'SELL' THEN -t.shares END) AS owned_shares
+        FROM transactions t
+        WHERE users_id = ? AND symbol = ?
+    """, session['user_id'], symbol)[0].get('owned_shares')
+    
+    if not owned_shares:
+        owned_shares = 0
+        
+    return owned_shares
+    
