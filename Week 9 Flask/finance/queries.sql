@@ -127,3 +127,16 @@ FROM transactions AS t
 WHERE t.users_id = ?
 GROUP BY t.symbol
 HAVING total_shares > 0;
+
+
+SELECT 
+    SUM(CASE WHEN t.action = 'BUY' THEN t.shares
+             WHEN t.action = 'SELL' THEN -t.shares END) AS shares
+FROM transactions t
+WHERE users_id = 9 AND symbol = 'NVDA'
+;
+
+
+SELECT *
+FROM users
+WHERE id = 9;

@@ -10,35 +10,30 @@ def index():
     """Show portfolio of stocks"""
     
     symbols = db.execute('''
-        SELECT t.symbol,
+        SELECT symbol,
             SUM(
                 CASE
-                    WHEN t.action = 'BUY' THEN t.shares
-                    WHEN t.action = 'SELL' THEN - t.shares
+                    WHEN action = 'BUY' THEN shares
+                    WHEN action = 'SELL' THEN -shares
                 END
             ) AS total_shares,
             SUM(
                 CASE
-                    WHEN t.action = 'BUY' THEN t.total
-                    WHEN t.action = 'SELL' THEN - t.total
+                    WHEN action = 'BUY' THEN total
                 END
-            ) AS total_invested,
-            (
-                SUM(
-                    CASE
-                        WHEN t.action = 'BUY' THEN t.total
-                        WHEN t.action = 'SELL' THEN - t.total
-                    END
-                ) * 1.0 / SUM(
-                    CASE
-                        WHEN t.action = 'BUY' THEN t.shares
-                        WHEN t.action = 'SELL' THEN - t.shares
-                    END
-                )
-            ) AS cost_basis
-        FROM transactions AS t
-        WHERE t.users_id = ?
-        GROUP BY t.symbol
+            ) AS gross_invested,
+            SUM(
+                CASE
+                    WHEN action = 'BUY' THEN total
+                END
+            ) * 1.0 / NULLIF(SUM(
+                CASE
+                    WHEN action = 'BUY' THEN shares
+                END
+            ), 0) AS cost_basis
+        FROM transactions
+        WHERE users_id = ?
+        GROUP BY symbol
         HAVING total_shares > 0;
     ''', session['user_id'])
     
@@ -51,13 +46,17 @@ def index():
         symbol['name'] = lookedup_symbol.get('name')
         symbol['total_market'] = lookedup_symbol.get('price') * symbol.get('total_shares')
 
-        # Profit/loss percentage
-        # profit_percent = ((current_price - avg_price) / avg_price) * 100
-        symbol['profit_percent'] = round(((lookedup_symbol.get('price') - symbol.get('cost_basis')) / symbol.get('cost_basis')) * 100, 2)
+        # Calculate total_invested from cost_basis * total_shares
+        symbol['total_invested'] = round(symbol.get('cost_basis') * symbol.get('total_shares'), 2)
+
+        # Profit/loss percentage based on total position
+        # profit_percent = ((current_price / cost_basis) - 1) * 100
+        cost_basis = symbol.get('cost_basis')
+        symbol['profit_percent'] = round(((lookedup_symbol.get('price') / cost_basis) - 1) * 100, 2) if cost_basis else 0
 
         # Absolute profit/loss (in money)
-        # profit = (current_price - avg_price) * total_shares
-        symbol['profit_absolute'] = round((lookedup_symbol.get('price') - symbol.get('cost_basis')) * symbol.get('total_shares'), 2)
+        # profit = total_market_value - total_invested
+        symbol['profit_absolute'] = round(symbol['total_market'] - symbol.get('total_invested'), 2)
 
     
     print('>> symbols:', symbols)
@@ -66,42 +65,22 @@ def index():
     cash = db.execute('SELECT cash FROM users WHERE id = ?', session['user_id'])[0].get('cash')
     print('>> cash:', cash)
     
-    # get number of shares and grand total for price user owns
-    summaries = db.execute('''
-        SELECT
-            SUM(
-                CASE
-                    WHEN action = 'BUY' THEN shares
-                    WHEN action = 'SELL' THEN -shares
-                END
-            ) AS total_shares,
-            SUM(
-                CASE
-                    WHEN action = 'BUY' THEN total
-                    WHEN action = 'SELL' THEN -total
-                END
-            ) AS grand_total_invested
-        FROM transactions
-        WHERE users_id = ?
-    ''', session['user_id'])[0]
+    # Calculate summaries from symbols
+    summaries = {
+        'total_shares': sum(s['total_shares'] for s in symbols),
+        'grand_total_market_value': round(sum(s['total_market'] for s in symbols), 2),
+        'grand_total_invested': round(sum(s['total_invested'] for s in symbols), 2)
+    }
 
-    print('>> summaries:', summaries)
-    
-    grand_total_market_value = 0
+    invested = summaries['grand_total_invested']
+    market = summaries['grand_total_market_value']
 
-    for s in symbols:
-        grand_total_market_value += s.get('total_market')
-
-    summaries['grand_total_market_value'] = round(grand_total_market_value, 2)
-
-    # Calculate overall percentage change and profit/loss
-    total_invested = summaries['grand_total_invested']
-    if total_invested and total_invested != 0:
-        summaries['overall_pct_change'] = round(((grand_total_market_value - total_invested) / total_invested) * 100, 2)
-        summaries['overall_profit_loss'] = round(grand_total_market_value - total_invested, 2)
+    if invested > 0:
+        summaries['overall_profit_loss'] = round(market - invested, 2)
+        summaries['overall_pct_change'] = round(((market / invested) - 1) * 100, 2)
     else:
-        summaries['overall_pct_change'] = 0
         summaries['overall_profit_loss'] = 0
+        summaries['overall_pct_change'] = 0
         
     
     return render_template(

@@ -19,6 +19,7 @@ def buy_get():
     
     if 'quote' not in session:
         return apology("Sorry you haven't selected a quote")
+    
 
     # if the quote on query string doesn't match the one stored in session
     # lookup again, update session to latest
@@ -32,10 +33,35 @@ def buy_get():
             session['quote'] = new_symbol
         
     print(">> session['quote']:", session['quote'])
+    print('>> session:', session)
     
-    return render_template('buy.html', quote=session['quote'])
+    owned_shares = db.execute("""
+        SELECT 
+            SUM(CASE WHEN t.action = 'BUY' THEN t.shares
+                    WHEN t.action = 'SELL' THEN -t.shares END) AS owned_shares
+        FROM transactions t
+        WHERE users_id = ? AND symbol = ?
+    """, session['user_id'], symbol)[0].get('owned_shares')
+    
+    print('>> owned_shares:', owned_shares)
+    
+    if not owned_shares:
+        owned_shares = 0
 
+    available_cash = db.execute('SELECT cash FROM users WHERE id = ?', session['user_id'])[0].get('cash')
+    print('>> available_cash:', available_cash)
+    
+    max_shares_can_buy = int(available_cash / session['quote'].get('price'))
+    print('>> max_shares_can_buy:', max_shares_can_buy)
         
+    return render_template(
+        'buy.html',
+        quote = session ['quote'],
+        owned_shares = owned_shares,
+        max_shares_can_buy = max_shares_can_buy,
+        available_cash = available_cash
+    )
+
 
 @app.route("/buy", methods=["POST"])
 @login_required
@@ -49,7 +75,7 @@ def buy_post():
     if shares is None or int(shares) <= 0:
         return apology('Invalid shares')
     
-    price = session['quote'].get('price')
+    price = request.form.get('price')
     buy_total = int(shares) * float(price)
     
     # getting current user data for calculations
@@ -63,7 +89,6 @@ def buy_post():
 
     if buy_total > user_cash:
         return apology("You're too poor to buy")
-    
 
     # using SQL transaction
     try:
