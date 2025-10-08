@@ -17,15 +17,18 @@ def buy_post():
 
     symbol = request.form.get('symbol').upper()
     shares = request.form.get('shares')
+    
+    symbol = lookup(symbol)
 
     if symbol is None:
         return apology('Invalid symbol')
     
-    if shares is None or int(shares) <= 0:
+    try:
+        shares = int(shares)
+    except ValueError:
         return apology('Invalid shares')
     
-    price = lookup(symbol).get('price')
-    buy_total = int(shares) * float(price)
+    buy_total = int(shares) * float(symbol.get('price'))
     
     # getting current user data for calculations
     
