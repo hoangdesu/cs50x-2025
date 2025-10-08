@@ -1,17 +1,17 @@
-from flask import render_template, request, flash, redirect
+from flask import render_template, request, flash, redirect, Blueprint, current_app
 from helpers import apology
 from werkzeug.security import generate_password_hash
 
-# shared instances
-from app import app, db
+bp = Blueprint("register", __name__)
 
-@app.route("/register", methods=["GET", "POST"])
+@bp.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
-    
+    db = current_app.config['db']
+
     # print('> print ehe:', generate_password_hash('ehe'))
     # app.logger.info('> log ehe:' + generate_password_hash('ehe'))
-    
+
     if request.method == 'GET':
         return render_template('register.html')
     

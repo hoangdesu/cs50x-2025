@@ -1,10 +1,8 @@
-from flask import flash, redirect, session
+from flask import flash, redirect, session, Blueprint
 
-# shared instances
-from app import app, db
+bp = Blueprint("logout", __name__)
 
-
-@app.route("/logout")
+@bp.route("/logout")
 def logout():
     """Log user out"""
     flash(f'Goodbye {session["user_name"]}!')

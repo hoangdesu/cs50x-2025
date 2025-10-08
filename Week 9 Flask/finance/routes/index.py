@@ -1,13 +1,16 @@
-from flask import render_template, session
+from flask import render_template, session, Blueprint, current_app
 from helpers import login_required, lookup
 
 # shared instances
-from app import app, db
+# from app import app, db
 
-@app.route("/")
+bp = Blueprint("index", __name__)
+
+@bp.route("/")
 @login_required
 def index():
     """Show portfolio of stocks"""
+    db = current_app.config['db'] # can only access current_app inside a route function, not at the top of a module.
     
     symbols = db.execute('''
         SELECT symbol,

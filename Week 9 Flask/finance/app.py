@@ -23,7 +23,7 @@ Session(app)
 
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///finance.db")
-
+app.config['db'] = db
 
 # - registers a function to run after each HTTP request is processed
 @app.after_request
@@ -36,28 +36,69 @@ def after_request(response):
 
 
 # Executes the controller for index / and registers all the routes 
-import routes.index  
+
+# import routes.index
 
 # /register
-import routes.register
+# import routes.register
+
+# # /login
+# import routes.login
+
+# # /logout
+# import routes.logout
+
+# # /search
+# import routes.search
+
+# # /quote
+# import routes.quote
+
+# # /buy
+# import routes.buy
+
+# # /sell
+# import routes.sell
+
+# # /history
+# import routes.history
+
+# /index
+from routes.index import bp as index_bp
+
+# /register
+from routes.register import bp as register_bp
 
 # /login
-import routes.login
+from routes.login import bp as login_bp
 
 # /logout
-import routes.logout
+from routes.logout import bp as logout_bp
 
 # /search
-import routes.search
+from routes.search import bp as search_bp
 
 # /quote
-import routes.quote
+from routes.quote import bp as quote_bp
 
 # /buy
-import routes.buy
+from routes.buy import bp as buy_bp
 
 # /sell
-import routes.sell
+from routes.sell import bp as sell_bp
 
 # /history
-import routes.history
+from routes.history import bp as history_bp
+
+
+# Register routes with Blueprint -> better approach and make it work on CS50
+app.register_blueprint(index_bp)
+app.register_blueprint(register_bp)
+app.register_blueprint(login_bp)
+app.register_blueprint(logout_bp)
+app.register_blueprint(search_bp)
+app.register_blueprint(quote_bp)
+app.register_blueprint(buy_bp)
+app.register_blueprint(sell_bp)
+app.register_blueprint(history_bp)
+

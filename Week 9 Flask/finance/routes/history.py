@@ -1,15 +1,14 @@
-from flask import render_template, session, request
-from helpers import apology, login_required
+from flask import render_template, session, request, Blueprint, current_app
+from helpers import login_required
 
-# shared instances
-from app import app, db
+bp = Blueprint("history", __name__)
 
-
-@app.route("/history")
+@bp.route("/history")
 @login_required
 def history():
     """Show history of transactions"""
-    
+    db = current_app.config['db']
+
     page = request.args.get('page', 1, type=int)
     limits = 10
     offset = (page - 1) * limits

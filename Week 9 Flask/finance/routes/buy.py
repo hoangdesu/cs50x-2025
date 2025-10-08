@@ -1,15 +1,14 @@
-from flask import render_template, session, request, flash, redirect
+from flask import render_template, session, request, flash, redirect, Blueprint, current_app
 from helpers import apology, login_required, lookup, get_owned_shares, usd
 
-# shared instances
-from app import app, db
+bp = Blueprint("buy", __name__)
 
-
-@app.route("/buy", methods=["GET"])
+@bp.route("/buy", methods=["GET"])
 @login_required
 def buy_get():
     """Buy shares of stock"""
-    
+    db = current_app.config['db']
+
     symbol = request.args.get('symbol')
 
     # need to have a symbol chosen to access the buy page
@@ -53,9 +52,11 @@ def buy_get():
     )
 
 
-@app.route("/buy", methods=["POST"])
+@bp.route("/buy", methods=["POST"])
 @login_required
 def buy_post():
+    db = current_app.config['db']
+
     symbol = request.form.get('symbol')
     shares = request.form.get('shares')
 

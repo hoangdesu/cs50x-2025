@@ -1,14 +1,14 @@
-from flask import render_template, session, request, flash, redirect
+from flask import render_template, session, request, flash, redirect, Blueprint, current_app
 from helpers import apology, login_required, lookup, get_owned_shares, usd
 
-# shared instances
-from app import app, db
+bp = Blueprint("sell", __name__)
 
-@app.route("/sell", methods=["GET"])
+@bp.route("/sell", methods=["GET"])
 @login_required
 def sell_get():
     """Sell shares of stock"""
-    
+    db = current_app.config['db']
+
     args_symbol = request.args.get('symbol')
     if not args_symbol:
         flash('Please select a symbol first to sell')
@@ -37,11 +37,14 @@ def sell_get():
         available_cash=available_cash
     )
 
-    
-@app.route("/sell", methods=["POST"])
+
+
+@bp.route("/sell", methods=["POST"])
 @login_required
 def sell_post():
     """Sell shares of stock"""
+    db = current_app.config['db']
+
     print('>> POST /sell: ', request.form)
     symbol = request.form.get('symbol')
     price = float(request.form.get('price'))

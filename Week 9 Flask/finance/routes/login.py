@@ -1,13 +1,13 @@
-from flask import render_template, request, flash, redirect, session
+from flask import render_template, request, flash, redirect, session, Blueprint, current_app
 from helpers import apology
 from werkzeug.security import check_password_hash
 
-# shared instances
-from app import app, db
+bp = Blueprint("login", __name__)
 
-@app.route("/login", methods=["GET", "POST"])
+@bp.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
+    db = current_app.config['db']
 
     # Forget any user_id
     session.clear()

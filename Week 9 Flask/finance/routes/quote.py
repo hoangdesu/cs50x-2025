@@ -1,19 +1,17 @@
-from flask import render_template, session, request
+from flask import render_template, session, request, Blueprint
 from helpers import apology, login_required, lookup, get_owned_shares
 
-# shared instances
-from app import app
+bp = Blueprint("quote", __name__)
 
-
-@app.route("/quote", methods=["GET"])
+@bp.route("/quote", methods=["GET"])
 @login_required
 def quote_get():
     """Get stock quote."""
-    
-    return render_template('quote.html');
+
+    return render_template('quote.html')
 
 
-@app.route("/quote", methods=["POST"])
+@bp.route("/quote", methods=["POST"])
 @login_required
 def quote_post():
     symbol = request.get_json()
