@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Buy
+{% endblock %}
+
+{% block main %}
+    <div class="mb-3">
+        <h5>Company Name</h5>
+        <input autocomplete="off" autofocus class="form-control mx-auto w-25" type="text" value="{{ quote.name }}" disabled>
+    </div>
+    <div class="mb-3">
+        <h5>Symbol</h5>
+        <input autocomplete="off" autofocus class="form-control mx-auto w-25" name="symbol" type="text" value="{{ quote.symbol }}" disabled>
+        <!-- disabled input is NOT included in the form submission by default -> use this hidden input trick to include it in the form -->
+        <input name="symbol" value="{{ quote.symbol }}" type="hidden">
+    </div>
+    <div class="mb-3">
+        <h5>Price</h5>
+        <input autocomplete="off" autofocus class="form-control mx-auto w-25" type="text" value="{{ quote.price | usd }} / share" disabled>
+        <input name="price" value="{{ quote.price }}" type="hidden">
+    </div>
+    <div class="mt-5">
+        <a href="/quote" class="btn btn-info">🔙 Back</a>
+        <a href="/buy" class="btn btn-success w-25" type="submit">Buy 📈</a>
+    </div>
+{% endblock %}

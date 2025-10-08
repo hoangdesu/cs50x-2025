@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Quote
+{% endblock %}
+
+{% block main %}
+<h1 class="mb-5">Get quote</h1>
+
+<form action="/quote" method="post" id="quote-form"
+    class="d-flex justify-content-center align-items-start gap-3 mt-3 mb-5">
+    <div class="dropdown">
+        <input autocomplete="off" id="searchBox" autofocus class="form-control mx-auto w-auto dropdown-toggle"
+            name="symbol" data-bs-toggle="dropdown" data-bs-offset="0,10" placeholder="Search ticker symbol..."
+            type="text">
+
+        <ul id="autocompleteMenu" class="dropdown-menu overflow-auto"></ul>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Get stock quote</button>
+</form>
+
+<div id="quote-details"></div>
+
+<script src="/static/quote.js"></script>
+
+{% endblock %}

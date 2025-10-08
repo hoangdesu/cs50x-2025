@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Sell
+{% endblock %}
+
+{% block main %}
+    <form action="/sell" method="post">
+        <div class="mb-3">
+            <h5>Company Name</h5>
+            <input autocomplete="off" autofocus class="form-control mx-auto w-25" type="text" value="{{ symbol.name }}" disabled>
+        </div>
+        <div class="mb-3">
+            <h5>Symbol</h5>
+            <select class="form-select mx-auto w-25" name="symbol" aria-label="Default select example" disabled>
+                <option value="{{ symbol.get('symbol') }}" selected >{{ symbol.get('symbol') }}</option>
+            </select>
+            <!-- disabled input is NOT included in the form submission by default -> use this hidden input trick to include it in the form -->
+            <input name="symbol" value="{{ symbol.symbol }}" type="hidden">
+        </div>
+        <div class="mb-3">
+            <h5>Price</h5>
+            <input autocomplete="off" autofocus class="form-control mx-auto w-25" type="text" value="{{ symbol.price | usd }} / share" disabled>
+            <input name="price" value="{{ symbol.price }}" type="hidden">
+        </div>
+        <div class="mb-3">
+            <h5>Currently owned</h5>
+            <input autocomplete="off" autofocus class="form-control mx-auto w-25" type="text" value="{{ owned_shares }} shares" disabled>
+        </div>
+        <div class="mb-3">
+            <h4>Selling shares</h4>
+            <p class="mb-1">Available cash: {{ available_cash | usd }}</p>
+            <p>You can sell up to {{ owned_shares }} shares</p>
+            <input autocomplete="off" autofocus class="form-control mx-auto w-25" name="shares" type="number" min="1" max="{{ owned_shares }}">
+        </div>
+        <p id="sell-total">Total: $0.00</p>
+        <div class="mt-5">
+            <a href="/quote" class="btn btn-info">🔙 Back</a>
+            <button class="btn btn-warning w-25" type="submit">Sell 📉</button>
+        </div>
+    </form>
+
+    <script src="/static/sell.js"></script>
+{% endblock %}

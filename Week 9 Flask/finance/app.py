@@ -101,4 +101,3 @@ app.register_blueprint(quote_bp)
 app.register_blueprint(buy_bp)
 app.register_blueprint(sell_bp)
 app.register_blueprint(history_bp)
-

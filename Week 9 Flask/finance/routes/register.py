@@ -22,18 +22,18 @@ def register():
         
         # missing username
         if not username:
-            return apology("Username not found", 404)
+            return apology("Username not found")
         
         # username exists
         users = db.execute("SELECT username FROM users WHERE username = ?", username)
         # print('\n>> user:\n', user)
         
         if len(users) > 0 and users[0].get('username') == username:
-            return apology("Username exists", 403)
+            return apology("Username exists")
             
         # either password is blank or the passwords do not match
         if not password or not confirmation or password != confirmation:
-            return apology("Password error", 403)
+            return apology("Password error")
             
         insert_res = db.execute("INSERT INTO users (username, hash) VALUES (?, ?)", username, generate_password_hash(password))
         

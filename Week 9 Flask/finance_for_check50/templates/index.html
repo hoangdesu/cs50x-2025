@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% from "components/portfolio_table.html" import portfolio_table %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+    <h1 class="mb-5">Your Portfolio</h1>
+
+    <div class="my-5 d-flex justify-content-between">
+        <div>
+            <span class="text-decoration-underline">User:</span>
+            <span class="fw-bold">{{ user_name }}</span>
+        </div>
+        <div>
+            <span class="text-decoration-underline">Available cash:</span>
+            <span class="fw-bold">{{ cash | usd}}</span>
+        </div>
+    </div>
+
+    {% if symbols|length == 0 %}
+        <div>
+            <p>You don't own any stocks yet.</p>
+
+            <a href="/quote" class="link-offset-1">
+                <button type="button" class="btn btn-primary">Buy now!</button>
+            </a>
+        </div>
+    {% else %}
+        {{ portfolio_table(symbols, summaries) }}
+    {% endif %}
+    
+    <script src="/static/index.js"></script>
+{% endblock %}

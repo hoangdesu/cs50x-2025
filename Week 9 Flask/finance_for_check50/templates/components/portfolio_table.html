@@ -1,0 +1,82 @@
+{% macro portfolio_table(symbols, summaries) %}
+<table class="table table-striped table-hover">
+    <thead>
+        <tr class="align-top">
+            <th scope="col" class="text-end">#</th>
+            <th scope="col" class="text-end">Symbol</th>
+            <th scope="col" class="text-end">Shares</th>
+            <th scope="col" class="text-end">
+                <p class="mb-1">Market price</p>
+                <p class="text-muted m-0">Cost basis</p>
+            </th>
+            <th scope="col" class="text-end">
+                <p class="mb-1">% Change</p>
+                <p class="text-muted m-0">Profit/Loss</p>
+            </th>
+            <th scope="col" class="text-end">
+                <p class="mb-1">Market value</p>
+                <p class="text-muted m-0">Total invested</p>
+            </th>
+            <th scope="col" class="text-end">Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for symbol in symbols %}
+            <tr class="align-middle">
+                <td scope="row" class="text-end">{{ loop.index }}</td>
+                <td class="text-end" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
+                    data-bs-title="{{ symbol.get('name') }}">{{ symbol.get('symbol') }}</td>
+                <td class="text-end">{{ symbol.get('total_shares') }}</td>
+                <td class="text-end">
+                    <p class="mb-1">{{ symbol.get('price') | usd }}</p>
+                    <p class="text-muted m-0">{{ symbol.get('cost_basis') | usd }}</p>
+                </td>
+                <td class="text-end">
+                    <p class="mb-1 {{ 'text-success' if symbol.get('profit_percent') >= 0 else 'text-danger' }}">
+                        {{ '+' if symbol.get('profit_percent') >= 0 }}{{ symbol.get('profit_percent') }}%
+                    </p>
+                    <p class="m-0 {{ 'text-success' if symbol.get('profit_absolute') >= 0 else 'text-danger' }}">
+                        {{ '+' if symbol.get('profit_absolute') >= 0 }}{{ symbol.get('profit_absolute') | usd }}
+                    </p>
+                </td>
+                <td class="text-end">
+                    <p class="mb-1">{{ symbol.get('total_market') | usd }}</p>
+                    <p class="text-muted m-0">{{ symbol.get('total_invested') | usd }}</p>
+                </td>
+                <td class="text-end">
+                    <a class="btn btn-success btn-sm" href="/buy?symbol={{ symbol.get('symbol') }}">
+                        Buy
+                    </a>
+                    <a class="btn btn-warning btn-sm" href="/sell?symbol={{ symbol.get('symbol') }}">
+                        Sell
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+
+        <!-- summary row -->
+        {% if summaries %}
+        <tr class="table-warning fw-semibold">
+            <td class="text-end">TOTAL</td>
+            <td></td>
+            <td class="text-end">{{ summaries.get('total_shares') }}</td>
+            <td></td>
+            <td class="text-end">
+                <p class="mb-1 {{ 'text-success' if summaries.get('overall_pct_change') >= 0 else 'text-danger' }}">
+                    {{ '+' if summaries.get('overall_pct_change') >= 0 }}{{ summaries.get('overall_pct_change') }}%
+                </p>
+                <p class="m-0 {{ 'text-success' if summaries.get('overall_profit_loss') >= 0 else 'text-danger' }}">
+                    {{ '+' if summaries.get('overall_profit_loss') >= 0 }}{{ summaries.get('overall_profit_loss') | usd }}
+                </p>
+            </td>
+            <td class="text-end">
+                <p class="mb-1">{{ summaries.get('grand_total_market_value') | usd }}</p>
+                <p class="text-muted m-0">{{ summaries.get('grand_total_invested') | usd }}</p>
+            </td>
+            <td></td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>
+{% endmacro %}
