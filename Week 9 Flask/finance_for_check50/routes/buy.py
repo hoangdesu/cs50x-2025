@@ -15,10 +15,10 @@ def buy_get():
 def buy_post():
     db = current_app.config['db']
 
-    symbol = request.form.get('symbol').upper()
+    form_symbol = request.form.get('symbol').upper()
     shares = request.form.get('shares')
     
-    symbol = lookup(symbol)
+    symbol = lookup(form_symbol)
 
     if symbol is None:
         return apology('Invalid symbol')
@@ -55,8 +55,8 @@ def buy_post():
         db.execute(
             query, 
             user_id=session['user_id'], 
-            symbol=symbol, 
-            price=price, 
+            symbol=symbol.get('symbol'),
+            price=symbol.get('price'), 
             shares=shares,
             total=buy_total
         )
@@ -73,5 +73,5 @@ def buy_post():
         print("Transaction failed. Rolled back", e)
         return apology('Transaction failed')
     
-    flash(f'Successfully bought {shares} shares of {symbol} for {usd(buy_total)}!')
+    flash(f'Successfully bought {shares} shares of {symbol.get('symbol')} for {usd(buy_total)}!')
     return redirect('/')
