@@ -137,6 +137,11 @@ WHERE users_id = 9 AND symbol = 'NVDA'
 ;
 
 
-SELECT *
+SELECT cash
 FROM users
 WHERE id = 9;
+
+
+SELECT * FROM transactions
+WHERE users_id = 13;
+

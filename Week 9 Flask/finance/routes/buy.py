@@ -1,5 +1,5 @@
 from flask import render_template, session, request, flash, redirect
-from helpers import apology, login_required, lookup, get_owned_shares
+from helpers import apology, login_required, lookup, get_owned_shares, usd
 
 # shared instances
 from app import app, db
@@ -104,12 +104,12 @@ def buy_post():
         db.execute('UPDATE users SET cash = ? WHERE id = ?', new_balance, session['user_id'])
         
         db.execute("COMMIT")  # commit all
-        print("Transaction inserted successfully")
+        print("Inserted Buy transaction successfully")
         
     except Exception as e:
         db.execute("ROLLBACK")
         print("Transaction failed. Rolled back", e)
         return apology('Transaction failed')
     
-    flash(f'Successfully bought {symbol}!')
+    flash(f'Successfully bought {shares} shares of {symbol} for {usd(buy_total)}!')
     return redirect('/')

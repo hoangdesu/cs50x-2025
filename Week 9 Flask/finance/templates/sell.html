@@ -33,15 +33,12 @@
             <p>You can sell up to {{ owned_shares }} shares</p>
             <input autocomplete="off" autofocus class="form-control mx-auto w-25" name="shares" type="number" min="1" max="{{ owned_shares }}">
         </div>
-
-        
-        
-
+        <p id="sell-total">Total: $0.00</p>
         <div class="mt-5">
             <a href="/quote" class="btn btn-info">🔙 Back</a>
             <button class="btn btn-warning w-25" type="submit">Sell 📉</button>
         </div>
-
-        
     </form>
+
+    <script src="/static/sell.js"></script>
 {% endblock %}

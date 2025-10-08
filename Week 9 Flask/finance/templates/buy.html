@@ -31,9 +31,12 @@
             <p>You can buy up to {{ max_shares_can_buy }} shares</p>
             <input autocomplete="off" autofocus class="form-control mx-auto w-25" name="shares" type="number" min="1" max="{{ max_shares_can_buy }}">
         </div>
+        <p id="buy-total">Total: $0.00</p>
         <div class="mt-5">
             <a href="/quote" class="btn btn-info">🔙 Back</a>
             <button class="btn btn-success w-25" type="submit">Buy 📈</button>
         </div>
     </form>
+
+    <script src="/static/buy.js"></script>
 {% endblock %}

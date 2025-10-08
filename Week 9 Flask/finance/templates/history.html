@@ -9,7 +9,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                {% set columns = ['#', 'Action', 'Symbol', 'Price', 'Shares', 'Total', 'Created at'] %}
+                {% set columns = ['#', 'Action', 'Symbol', 'Shares', 'Price', 'Total', 'Created at'] %}
 
                 {% for col in columns %}
                     <th scope="col" class="text-end">{{ col }}</th>
@@ -26,12 +26,31 @@
                         </span>
                     </td>
                     <td class="text-end">{{ transaction.get('symbol') }}</td>
-                    <td class="text-end">{{ transaction.get('price') | usd }}</td>
                     <td class="text-end">{{ transaction.get('shares') }}</td>
+                    <td class="text-end">{{ transaction.get('price') | usd }}</td>
                     <td class="text-end">{{ transaction.get('total') | usd }}</td>
                     <td class="text-end">{{ transaction.get('created_at') }}</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <nav aria-label="Transaction pagination">
+        <ul class="pagination justify-content-center">
+            <li class="page-item">
+                <a class="page-link {{ 'disabled' if page <= 1 }}" href="/history?page={{ page-1 }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" aria-current="page">{{ page }}</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link {{ 'disabled' if transactions | length < 10 }}" href="/history?page={{ page+1 }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
 {% endblock %}

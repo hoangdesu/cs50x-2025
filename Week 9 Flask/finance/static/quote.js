@@ -1,9 +1,3 @@
-// Bootstrap tooltips
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-
-// Quote
-
 // Search Autocomplete
 const searchBox = document.getElementById('searchBox');
 const autocompleteMenu = document.getElementById('autocompleteMenu');

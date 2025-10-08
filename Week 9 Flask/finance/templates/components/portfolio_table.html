@@ -17,6 +17,7 @@
                 <p class="mb-1">Market value</p>
                 <p class="text-muted m-0">Total invested</p>
             </th>
+            <th scope="col" class="text-end">Actions</th>
         </tr>
     </thead>
 
@@ -43,12 +44,12 @@
                     <p class="mb-1">{{ symbol.get('total_market') | usd }}</p>
                     <p class="text-muted m-0">{{ symbol.get('total_invested') | usd }}</p>
                 </td>
-                <td>
-                    <a href="/buy?symbol={{ symbol.get('symbol') }}">
-                        <button>Buy</button>
+                <td class="text-end">
+                    <a class="btn btn-success btn-sm" href="/buy?symbol={{ symbol.get('symbol') }}">
+                        Buy
                     </a>
-                    <a href="/sell?symbol={{ symbol.get('symbol') }}">
-                        <button>Sell</button>
+                    <a class="btn btn-warning btn-sm" href="/sell?symbol={{ symbol.get('symbol') }}">
+                        Sell
                     </a>
                 </td>
             </tr>
@@ -73,6 +74,7 @@
                 <p class="mb-1">{{ summaries.get('grand_total_market_value') | usd }}</p>
                 <p class="text-muted m-0">{{ summaries.get('grand_total_invested') | usd }}</p>
             </td>
+            <td></td>
         </tr>
         {% endif %}
     </tbody>

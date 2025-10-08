@@ -1,10 +1,10 @@
 from flask import render_template, session, request, flash, redirect
-from helpers import apology, login_required, lookup, get_owned_shares
+from helpers import apology, login_required, lookup, get_owned_shares, usd
 
 # shared instances
 from app import app, db
 
-@app.route("/sell", methods=["GET", "POST"])
+@app.route("/sell", methods=["GET"])
 @login_required
 def sell_get():
     """Sell shares of stock"""
@@ -42,6 +42,55 @@ def sell_get():
 @login_required
 def sell_post():
     """Sell shares of stock"""
-    # return apology("TODO")
+    print('>> POST /sell: ', request.form)
+    symbol = request.form.get('symbol')
+    price = float(request.form.get('price'))
+    shares = int(request.form.get('shares'))
+
+    if not symbol:
+        return apology('Invalid symbol')
+
+    if shares < 0 or shares > get_owned_shares(symbol):
+        print('>> shares:', shares, get_owned_shares(symbol))
+        return apology('Invalid shares')
+
+    # SQL transaction
+    try:
+        db.execute('BEGIN')
+
+        query = """
+            INSERT INTO transactions (users_id, symbol, [action], price, shares, total)
+            VALUES (:user_id, :symbol, 'SELL', :price, :shares, :total);
+        """
+        
+        sell_total = price * shares
+        
+        db.execute(
+            query, 
+            user_id=session['user_id'], 
+            symbol=symbol,
+            price=price,
+            shares=shares,
+            total=sell_total
+        )
+        
+        user = db.execute('SELECT * FROM users WHERE id = ?', session["user_id"])[0]
     
-    return 
+        print('>> user:', user, user.get('cash'))
+        
+        user_cash = user.get('cash')
+        new_balance = user_cash + sell_total
+        db.execute('UPDATE users SET cash = ? WHERE id = ?', new_balance, session['user_id'])
+
+        db.execute("COMMIT")
+        print("Inserted Sell transaction successfully")
+        
+        
+    except Exception as e:
+        db.execute("ROLLBACK")
+        print("Transaction failed. Rolled back", e)
+        return apology('Transaction failed')
+    
+
+    flash(f'Successfully sold {shares} shares of {symbol} for {usd(sell_total)}!')
+    return redirect('/')
