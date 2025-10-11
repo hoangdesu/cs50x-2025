@@ -9,34 +9,23 @@ def sell_get():
     """Sell shares of stock"""
     db = current_app.config['db']
 
-    args_symbol = request.args.get('symbol')
-    if not args_symbol:
-        flash('Please select a symbol first to sell')
-        return redirect('/')
-
-    symbol = lookup(args_symbol)
+    owned_symbols = db.execute("""
+        SELECT symbol,
+            SUM(
+                CASE
+                    WHEN action = 'BUY' THEN shares
+                    WHEN action = 'SELL' THEN -shares
+                END
+            ) AS total_shares
+        FROM transactions
+        WHERE users_id = ?
+        GROUP BY symbol
+        HAVING total_shares > 0;
+    """, session['user_id'])
     
-    print('>> session:', session)
-    print('>> symbol:', symbol)
+    print('>> owned_symbols:', owned_symbols)
     
-    owned_shares = get_owned_shares(symbol.get('symbol'))
-    
-    if owned_shares == 0:
-        flash(f"Sorry you don't own any stock from {symbol.get('symbol')} to sell")
-        return redirect('/')
-    
-    print('>> owned_shares:', owned_shares)
-    
-    available_cash = db.execute('SELECT cash FROM users WHERE id = ?', session['user_id'])[0].get('cash')
-    print('>> available_cash:', available_cash)
-    
-    return render_template(
-        'sell.html',
-        symbol=symbol,
-        owned_shares=owned_shares,
-        available_cash=available_cash
-    )
-
+    return render_template('sell.html', symbols=owned_symbols)
 
 
 @bp.route("/sell", methods=["POST"])
@@ -47,15 +36,30 @@ def sell_post():
 
     print('>> POST /sell: ', request.form)
     symbol = request.form.get('symbol')
-    price = float(request.form.get('price'))
-    shares = int(request.form.get('shares'))
-
-    if not symbol:
+    
+    if symbol is None:
         return apology('Invalid symbol')
-
-    if shares < 0 or shares > get_owned_shares(symbol):
-        print('>> shares:', shares, get_owned_shares(symbol))
+    
+    try:
+        shares = int(request.form.get('shares'))
+    except Exception as e:
         return apology('Invalid shares')
+    
+    if shares is None:
+        return apology('Invalid shares')
+    
+    owned_shares = get_owned_shares(symbol)
+    
+    print('>> owned_shares:', owned_shares)
+
+    if shares < 0 or shares > owned_shares:
+        return apology('Invalid shares')
+
+    lookedup_symbol = lookup(symbol)
+    if lookedup_symbol is None:
+        return apology('Invalid symbol')
+    
+    price = lookedup_symbol.get('price')
 
     # SQL transaction
     try:

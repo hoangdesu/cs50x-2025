@@ -47,7 +47,7 @@ def index():
 
         symbol['price'] = lookedup_symbol.get('price')
         symbol['name'] = lookedup_symbol.get('name')
-        symbol['total_market'] = lookedup_symbol.get('price') * symbol.get('total_shares')
+        symbol['total_market'] = round(lookedup_symbol.get('price') * symbol.get('total_shares'), 2)
 
         # Calculate total_invested from cost_basis * total_shares
         symbol['total_invested'] = round(symbol.get('cost_basis') * symbol.get('total_shares'), 2)

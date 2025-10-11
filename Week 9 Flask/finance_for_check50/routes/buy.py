@@ -29,6 +29,7 @@ def buy_post():
         return apology('Invalid shares')
     
     buy_total = int(shares) * float(symbol.get('price'))
+    print('>> buy_total:', buy_total)
     
     # getting current user data for calculations
     

@@ -1,6 +1,6 @@
 import requests
 
-from flask import redirect, render_template, session
+from flask import redirect, render_template, session, current_app
 from functools import wraps
 
 def apology(message, code=400):
@@ -74,7 +74,8 @@ def usd(value):
 
 def get_owned_shares(symbol: str) -> int:
     # avoid circular import
-    from app import db
+    db = current_app.config['db']
+    
     owned_shares = db.execute("""
         SELECT 
             SUM(CASE WHEN t.action = 'BUY' THEN t.shares

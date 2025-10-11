@@ -252,3 +252,4 @@ class Finance(check50.flask.app):
 
     def page_exists(self, route):
         return self.get(route).status() == 200
+
